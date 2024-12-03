@@ -6,7 +6,7 @@
 /*   By: uschmidt <uschmidt@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 12:43:28 by uschmidt          #+#    #+#             */
-/*   Updated: 2024/12/03 16:03:35 by uschmidt         ###   ########.fr       */
+/*   Updated: 2024/12/03 17:50:18 by uschmidt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,26 +32,16 @@ void	*ft_memmove(void *dest, const void *src, size_t n)
 	return (dest);
 }
 
-size_t	ft_strlen(const char *str, int buf)
+size_t	ft_strlen(const char *str, ssize_t bytes)
 {
-	size_t	i;
+	ssize_t	i;
 
 	i = 0;
-	if (buf)
-		while (str[i] && i < BUFFER_SIZE)
+	if (bytes)
+		while (str[i] && i < bytes)
 			i++;
 	else
 		while (str[i])
 			i++;
-	return (i);
-}
-
-size_t	ft_buflen(const char *str)
-{
-	size_t	i;
-
-	i = 0;
-	while (str[i] && i < BUFFER_SIZE)
-		i++;
 	return (i);
 }

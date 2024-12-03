@@ -6,7 +6,7 @@
 /*   By: uschmidt <uschmidt@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 10:06:14 by uschmidt          #+#    #+#             */
-/*   Updated: 2024/12/03 16:20:19 by uschmidt         ###   ########.fr       */
+/*   Updated: 2024/12/03 17:48:03 by uschmidt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ char	*extend_line(char *line, int size)
 	if (line)
 		line_length = ft_strlen(line, 0);
 	linebuffer = (char *)malloc(sizeof(char) * (line_length + size + 1));
-	ft_bzero(linebuffer, (line_length + size + 1));
 	if (!linebuffer)
 		return (NULL);
+	ft_bzero(linebuffer, (line_length + size + 1));
 	if (line)
 	{
 		ft_memmove(linebuffer, line, line_length);
@@ -54,14 +54,13 @@ char	*extend_line(char *line, int size)
 	return (linebuffer);
 }
 
-char	*get_line(int fd, char *buffer)
+char	*get_line(int fd, char *buffer, ssize_t read_bytes)
 {
 	int			i;
 	int			buff_len;
 	char		*line;
-	ssize_t		read_bytes;
 
-	buff_len = ft_strlen(buffer, 1);
+	buff_len = ft_strlen(buffer, read_bytes);
 	i = get_newline_chr(buffer, buff_len);
 	line = NULL;
 	while (i == buff_len)
@@ -70,8 +69,10 @@ char	*get_line(int fd, char *buffer)
 		ft_memmove(line + ft_strlen(line, 0), buffer, i);
 		read_bytes = read(fd, buffer, BUFFER_SIZE);
 		if (read_bytes <= 0)
+		{
 			break ;
-		buff_len = ft_strlen(buffer, 1);
+		}
+		buff_len = ft_strlen(buffer, read_bytes);
 		i = get_newline_chr(buffer, buff_len);
 	}
 	line = extend_line(line, i);
@@ -86,6 +87,7 @@ char	*get_next_line(int fd)
 	ssize_t		read_bytes;
 	static char	*buffer;
 
+	read_bytes = 0;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	if (!buffer)
@@ -95,13 +97,9 @@ char	*get_next_line(int fd)
 		if (read_bytes <= 0)
 		{
 			free(buffer);
+			buffer = NULL;
 			return (NULL);
 		}
 	}
-	/*if (buffer[0] == '\0')
-	{
-		free(buffer);
-		return (NULL);
-	}*/
-	return (get_line(fd, buffer));
+	return (get_line(fd, buffer, read_bytes));
 }
