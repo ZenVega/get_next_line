@@ -5,20 +5,20 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: uschmidt <uschmidt@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/03 10:06:14 by uschmidt          #+#    #+#             */
-/*   Updated: 2024/12/03 10:48:40 by uschmidt         ###   ########.fr       */
+/*   Created: 2024/11/28 13:16:07 by uschmidt          #+#    #+#             */
+/*   Updated: 2024/11/29 17:39:06 by uschmidt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdio.h>
 
-int	get_newline_chr(char *str)
+int	get_next_lb(char *str)
 {
 	int	i;
 
 	i = 0;
-	while (i < BUFFER_SIZE && str[i] != '\n')
+	while (str[i] && str[i] != '\n')
 		i++;
 	return (i);
 }
@@ -26,17 +26,10 @@ int	get_newline_chr(char *str)
 char	*extend_line(char *line, int size)
 {
 	char	*linebuffer;
-	int		line_length;
 
-	line_length = 0;
-	if (line)
-		line_length = ft_strlen(line);
-	linebuffer = (char *)malloc(sizeof(char) * (line_length + size));
-	if (line)
-	{
-		ft_memmove(linebuffer, line, line_length);
-		free(line);
-	}
+	linebuffer = (char *)malloc(sizeof(char) * size);
+	ft_memmove(linebuffer, line, size);
+	free(line);
 	return (linebuffer);
 }
 
@@ -46,24 +39,30 @@ char	*get_line(int fd, char *buffer)
 	char		*line;
 	ssize_t		read_bytes;
 
-	write(1, "DEBUGGER_1\n", 11);
-	i = get_newline_chr(buffer);
-	line = NULL;
+	printf("BUFFER: %s //\n", buffer);
+	i = get_next_lb(buffer);
+	line = (char *)malloc(sizeof(char) * i + 1);
+	ft_memmove(line, buffer, i);
+	if (!line)
+		return (NULL);
 	while (i == BUFFER_SIZE)
 	{
-		line = extend_line(line, i);
-		line = ft_memmove(line + ft_strlen(line), buffer, i);
-		line[i + ft_strlen(line) + 1] = '\0';
-		read_bytes = read(fd, buffer, i);
-		i = get_newline_chr(buffer);
+		read_bytes = read(fd, buffer, BUFFER_SIZE - 1);
+		buffer[BUFFER_SIZE] = '\0';
+		i = get_next_lb(buffer);
+		line = extend_line(line, (ft_strlen(line) + i + 1));
+		ft_memmove(&line[(ft_strlen(line) + 1)], buffer, i);
 	}
-	line = extend_line(line, i);
-	write(1, "DEBUGGER_2\n", 11);
-	line = ft_memmove(line + ft_strlen(line), buffer, i);
-	write(1, "DEBUGGER_3\n", 11);
-	line[i + ft_strlen(line) + 1] = '\0';
-	ft_memmove(buffer, buffer + BUFFER_SIZE - i, i);
-	write(1, "DEBUGGER_4\n", 11);
+	ft_memmove(buffer, buffer + i, (BUFFER_SIZE - i));
+	printf("BUFFER_mid: %s //\n", buffer);
+	//THIS CALL FOR READ AINT WORKING!!!
+	read_bytes = read(fd, buffer + (BUFFER_SIZE - i - 1), i);
+	printf("READ: %zd //\n", read_bytes);
+	buffer[BUFFER_SIZE] = '\0';
+	printf("BUFFER_after: %s //\n", buffer);
+	if (read_bytes < i)
+		buffer[BUFFER_SIZE - i + read_bytes] = '\0';
+	line[i + 1] = '\0';
 	return (line);
 }
 
@@ -77,9 +76,10 @@ char	*get_next_line(int fd)
 	if (!buffer)
 	{
 		buffer = (char *)malloc(sizeof(char) * BUFFER_SIZE);
-		read_bytes = read(fd, buffer, BUFFER_SIZE);
+		read_bytes = read(fd, buffer, BUFFER_SIZE - 1);
 		if (read_bytes <= 0)
 			return (NULL);
+		buffer[read_bytes - 1] = '\0';
 	}
 	return (get_line(fd, buffer));
 }
