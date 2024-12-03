@@ -6,7 +6,7 @@
 /*   By: uschmidt <uschmidt@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 10:06:14 by uschmidt          #+#    #+#             */
-/*   Updated: 2024/12/03 14:44:36 by uschmidt         ###   ########.fr       */
+/*   Updated: 2024/12/03 16:20:19 by uschmidt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char	*extend_line(char *line, int size)
 
 	line_length = 0;
 	if (line)
-		line_length = ft_strlen(line);
+		line_length = ft_strlen(line, 0);
 	linebuffer = (char *)malloc(sizeof(char) * (line_length + size + 1));
 	ft_bzero(linebuffer, (line_length + size + 1));
 	if (!linebuffer)
@@ -61,23 +61,21 @@ char	*get_line(int fd, char *buffer)
 	char		*line;
 	ssize_t		read_bytes;
 
-	buff_len = ft_strlen(buffer);
+	buff_len = ft_strlen(buffer, 1);
 	i = get_newline_chr(buffer, buff_len);
 	line = NULL;
 	while (i == buff_len)
 	{
 		line = extend_line(line, i);
-		ft_memmove(line + ft_strlen(line), buffer, i);
-		line[i + ft_strlen(line)] = '\0';
+		ft_memmove(line + ft_strlen(line, 0), buffer, i);
 		read_bytes = read(fd, buffer, BUFFER_SIZE);
 		if (read_bytes <= 0)
 			break ;
-		buff_len = ft_strlen(buffer);
+		buff_len = ft_strlen(buffer, 1);
 		i = get_newline_chr(buffer, buff_len);
 	}
 	line = extend_line(line, i);
-	ft_memmove(line + ft_strlen(line), buffer, i + 1);
-	line[i + ft_strlen(line)] = '\0';
+	ft_memmove(line + ft_strlen(line, 0), buffer, i);
 	ft_memmove(buffer, buffer + i + 1, BUFFER_SIZE - i);
 	ft_bzero(buffer + (BUFFER_SIZE - i - 1), i + 1);
 	return (line);
@@ -95,9 +93,15 @@ char	*get_next_line(int fd)
 		buffer = (char *)malloc(sizeof(char) * BUFFER_SIZE);
 		read_bytes = read(fd, buffer, BUFFER_SIZE);
 		if (read_bytes <= 0)
+		{
+			free(buffer);
 			return (NULL);
+		}
 	}
-	if (buffer[0] == '\0')
+	/*if (buffer[0] == '\0')
+	{
+		free(buffer);
 		return (NULL);
+	}*/
 	return (get_line(fd, buffer));
 }
