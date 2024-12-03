@@ -6,7 +6,7 @@
 /*   By: uschmidt <uschmidt@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 10:06:14 by uschmidt          #+#    #+#             */
-/*   Updated: 2024/12/03 12:59:05 by uschmidt         ###   ########.fr       */
+/*   Updated: 2024/12/03 14:44:36 by uschmidt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ char	*extend_line(char *line, int size)
 	if (line)
 		line_length = ft_strlen(line);
 	linebuffer = (char *)malloc(sizeof(char) * (line_length + size + 1));
+	ft_bzero(linebuffer, (line_length + size + 1));
 	if (!linebuffer)
 		return (NULL);
 	if (line)
@@ -75,12 +76,10 @@ char	*get_line(int fd, char *buffer)
 		i = get_newline_chr(buffer, buff_len);
 	}
 	line = extend_line(line, i);
-	ft_memmove(line + ft_strlen(line), buffer, i);
+	ft_memmove(line + ft_strlen(line), buffer, i + 1);
 	line[i + ft_strlen(line)] = '\0';
 	ft_memmove(buffer, buffer + i + 1, BUFFER_SIZE - i);
-	write(1, buffer, BUFFER_SIZE);
-	printf("\n/\\ BUFFER /\\\n");
-	ft_bzero(buffer + (BUFFER_SIZE - i), i);
+	ft_bzero(buffer + (BUFFER_SIZE - i - 1), i + 1);
 	return (line);
 }
 

@@ -6,7 +6,7 @@
 /*   By: uschmidt <uschmidt@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 12:43:28 by uschmidt          #+#    #+#             */
-/*   Updated: 2024/12/03 12:05:34 by uschmidt         ###   ########.fr       */
+/*   Updated: 2024/12/03 14:38:20 by uschmidt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ size_t	ft_strlen(const char *str)
 	size_t	i;
 
 	i = 0;
-	while (str[i] && i < BUFFER_SIZE)
+	while (str[i] > 0 && str[i] < 127 && i < BUFFER_SIZE)
 		i++;
 	return (i);
 }
