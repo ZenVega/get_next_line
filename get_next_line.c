@@ -6,7 +6,7 @@
 /*   By: uschmidt <uschmidt@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 12:41:37 by uschmidt          #+#    #+#             */
-/*   Updated: 2024/12/04 15:24:39 by uschmidt         ###   ########.fr       */
+/*   Updated: 2024/12/04 16:12:56 by uschmidt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,13 @@ int	get_newline_chr(char *str)
 	int	i;
 
 	i = 0;
-	while (str[i] && str[i] != '\n')
+	while (str[i])
+	{
+		if (str[i] == '\n')
+			return (i);
 		i++;
-	if (str[i] && str[i] == '\n')
-		return (i);
-	return (0);
+	}
+	return (-1);
 }
 
 char	*merge_strs(char *first, char *second)
@@ -64,7 +66,7 @@ char	*read_to_nl(int fd, char *buffer)
 	ssize_t	read_bytes;
 	char	*read_str;
 
-	if (get_newline_chr(buffer))
+	if (get_newline_chr(buffer) != -1)
 		return (buffer);
 	read_str = ft_calloc(BUFFER_SIZE + 1);
 	read_bytes = 1;
@@ -74,6 +76,7 @@ char	*read_to_nl(int fd, char *buffer)
 		if (read_bytes < 0)
 		{
 			free(buffer);
+			free(read_str);
 			buffer = NULL;
 			return (NULL);
 		}
@@ -81,7 +84,7 @@ char	*read_to_nl(int fd, char *buffer)
 		buffer = merge_strs(buffer, read_str);
 		if (!buffer)
 			return (NULL);
-		if (get_newline_chr(buffer))
+		if (get_newline_chr(buffer) != -1)
 			break ;
 	}
 	free(read_str);
@@ -95,11 +98,12 @@ char	*extract_line(char *buffer)
 	int		to_clear;
 
 	nl = get_newline_chr(buffer);
+	if (nl == -1)
+		nl = ft_strlen(buffer);
 	line = ft_calloc(nl + 1);
 	if (!line)
 	{
 		free(buffer);
-		buffer = NULL;
 		return (NULL);
 	}
 	ft_memmove(line, buffer, nl);
