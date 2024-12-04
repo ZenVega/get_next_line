@@ -6,7 +6,7 @@
 /*   By: uschmidt <uschmidt@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 13:17:04 by uschmidt          #+#    #+#             */
-/*   Updated: 2024/12/03 17:39:23 by uschmidt         ###   ########.fr       */
+/*   Updated: 2024/12/04 13:52:01 by uschmidt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef GET_NEXT_LINE_H
@@ -23,6 +23,6 @@ void	*ft_memmove(void *dest, const void *src, size_t n);
 void	ft_bzero(void *s, size_t n);
 char	*get_next_line(int fd);
 char	*ft_strdup(const char *s);
-size_t	ft_strlen(const char *str, ssize_t bytes);
+size_t	ft_strlen(const char *str);
 
 #endif
