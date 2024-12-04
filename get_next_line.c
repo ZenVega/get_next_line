@@ -68,16 +68,20 @@ char	*get_line(int fd, char *buffer, ssize_t read_bytes)
 		line = extend_line(line, i);
 		ft_memmove(line + ft_strlen(line, 0), buffer, i);
 		read_bytes = read(fd, buffer, BUFFER_SIZE);
+		buffer[read_bytes] = '\0';
 		if (read_bytes <= 0)
-		{
 			break ;
-		}
 		buff_len = ft_strlen(buffer, read_bytes);
 		i = get_newline_chr(buffer, buff_len);
 	}
 	line = extend_line(line, i);
 	ft_memmove(line + ft_strlen(line, 0), buffer, i);
-	ft_memmove(buffer, buffer + i + 1, BUFFER_SIZE - i);
+	if (BUFFER_SIZE - i - 1 <= 0)
+	{
+		buffer[0] = '\0';
+		return (line);
+	}
+	ft_memmove(buffer, buffer + i + 1, BUFFER_SIZE - i - 1);
 	ft_bzero(buffer + (BUFFER_SIZE - i - 1), i + 1);
 	return (line);
 }
@@ -87,12 +91,12 @@ char	*get_next_line(int fd)
 	ssize_t		read_bytes;
 	static char	*buffer;
 
-	read_bytes = 0;
+	read_bytes = BUFFER_SIZE;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	if (!buffer)
 	{
-		buffer = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+		buffer = (char *)malloc(sizeof(char) * BUFFER_SIZE + 1);
 		read_bytes = read(fd, buffer, BUFFER_SIZE);
 		if (read_bytes <= 0)
 		{
@@ -100,6 +104,7 @@ char	*get_next_line(int fd)
 			buffer = NULL;
 			return (NULL);
 		}
+		buffer[read_bytes] = '\0';
 	}
 	return (get_line(fd, buffer, read_bytes));
 }

@@ -38,7 +38,7 @@ size_t	ft_strlen(const char *str, ssize_t bytes)
 
 	i = 0;
 	if (bytes)
-		while (str[i] && i < bytes)
+		while (i < bytes && str[i])
 			i++;
 	else
 		while (str[i])
