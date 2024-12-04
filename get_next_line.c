@@ -6,7 +6,7 @@
 /*   By: uschmidt <uschmidt@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 12:41:37 by uschmidt          #+#    #+#             */
-/*   Updated: 2024/12/04 16:12:56 by uschmidt         ###   ########.fr       */
+/*   Updated: 2024/12/04 16:32:46 by uschmidt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	*ft_calloc(size_t size)
 
 int	get_newline_chr(char *str)
 {
-	int	i;
+	long long	i;
 
 	i = 0;
 	while (str[i])
@@ -97,8 +97,8 @@ char	*extract_line(char *buffer)
 	char	*line;
 	int		to_clear;
 
-	nl = get_newline_chr(buffer);
-	if (nl == -1)
+	nl = get_newline_chr(buffer) + 1;
+	if (!nl)
 		nl = ft_strlen(buffer);
 	line = ft_calloc(nl + 1);
 	if (!line)
