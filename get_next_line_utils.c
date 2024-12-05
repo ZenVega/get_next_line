@@ -42,13 +42,27 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-void	ft_bzero(void *s, size_t n)
+void	*ft_calloc(size_t size)
 {
-	size_t	i;
-	char	*dest;
+	unsigned char	*ptr;
+	unsigned int	i;
 
+	if (size <= 0)
+		return (NULL);
+	ptr = (unsigned char *)malloc(sizeof(char) * size);
+	if (!ptr)
+		return (NULL);
 	i = 0;
-	dest = (char *)s;
-	while (i < n)
-		dest[i++] = 0;
+	while (i < size)
+		ptr[i++] = 0;
+	return (ptr);
+}
+
+char	*free_all(char **first, char **second)
+{
+	if (second != NULL)
+		free(*second);
+	free(*first);
+	*first = NULL;
+	return (*first);
 }

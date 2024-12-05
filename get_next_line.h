@@ -20,9 +20,9 @@
 # include <unistd.h>
 
 void	*ft_memmove(void *dest, const void *src, size_t n);
-void	ft_bzero(void *s, size_t n);
 char	*get_next_line(int fd);
-char	*ft_strdup(const char *s);
 size_t	ft_strlen(const char *str);
+void	*ft_calloc(size_t size);
+char	*free_all(char **first, char **second);
 
 #endif

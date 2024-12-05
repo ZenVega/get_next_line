@@ -11,23 +11,6 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
-
-void	*ft_calloc(size_t size)
-{
-	unsigned char	*ptr;
-	unsigned int	i;
-
-	if (size <= 0)
-		return (NULL);
-	ptr = (unsigned char *)malloc(sizeof(char) * size);
-	if (!ptr)
-		return (NULL);
-	i = 0;
-	while (i < size)
-		ptr[i++] = 0;
-	return (ptr);
-}
 
 int	get_newline_chr(char *str)
 {
@@ -49,15 +32,19 @@ char	*merge_strs(char *first, char *second)
 	int		second_len;
 	char	*result;
 
-	first_len = ft_strlen(first);
+	first_len = 0;
+	if (first)
+		first_len = ft_strlen(first);
 	second_len = ft_strlen(second);
 	result = ft_calloc(first_len + second_len + 1);
-	if (result)
+	if (!result)
+		return (NULL);
+	if (first)
 	{
 		ft_memmove(result, first, first_len);
-		ft_memmove(result + first_len, second, second_len + 1);
+		free(first);
 	}
-	free(first);
+	ft_memmove(result + first_len, second, second_len + 1);
 	return (result);
 }
 
@@ -66,20 +53,17 @@ char	*read_to_nl(int fd, char *buffer)
 	ssize_t	read_bytes;
 	char	*read_str;
 
-	if (get_newline_chr(buffer) != -1)
-		return (buffer);
 	read_str = ft_calloc(BUFFER_SIZE + 1);
+	if (!read_str)
+		return (NULL);
 	read_bytes = 1;
 	while (read_bytes > 0)
 	{
 		read_bytes = read(fd, read_str, BUFFER_SIZE);
+		if (read_bytes == 0)
+			break ;
 		if (read_bytes < 0)
-		{
-			free(buffer);
-			free(read_str);
-			buffer = NULL;
-			return (NULL);
-		}
+			return (free_all(&buffer, &read_str));
 		read_str[read_bytes] = 0;
 		buffer = merge_strs(buffer, read_str);
 		if (!buffer)
@@ -103,12 +87,12 @@ char	*extract_line(char *buffer)
 	line = ft_calloc(nl + 1);
 	if (!line)
 	{
-		free(buffer);
-		return (NULL);
+		buffer = NULL;
+		return (buffer);
 	}
 	ft_memmove(line, buffer, nl);
 	to_clear = ft_strlen(buffer) - nl;
-	ft_memmove(buffer, buffer + nl + 1, to_clear);
+	ft_memmove(buffer, buffer + nl, to_clear);
 	buffer[to_clear] = 0;
 	return (line);
 }
@@ -127,9 +111,9 @@ char	*get_next_line(int fd)
 		buffer[0] = 0;
 	}
 	buffer = read_to_nl(fd, buffer);
-	if (buffer && buffer[0] != 0)
+	if (!buffer)
+		return (NULL);
+	if (buffer[0] != 0)
 		return (extract_line(buffer));
-	free(buffer);
-	buffer = NULL;
-	return (NULL);
+	return (free_all(&buffer, NULL));
 }
