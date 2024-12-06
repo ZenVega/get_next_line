@@ -27,5 +27,5 @@ char	*get_next_line(int fd);
 size_t	ft_strlen(const char *str);
 void	*ft_calloc(size_t nmemb, size_t size);
 char	*free_all(char *first, char *second);
-char	*free_buffers(char **fd_buffers);
+
 #endif

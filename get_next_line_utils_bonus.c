@@ -74,22 +74,3 @@ char	*free_all(char *first, char *second)
 	}
 	return (NULL);
 }
-
-char	*free_buffers(char **fd_buffers)
-{
-	int	i;
-
-	i = 0;
-	while (i < FD_MAX)
-	{
-		if (fd_buffers[i])
-		{
-			free(fd_buffers[i]);
-			fd_buffers[i] = NULL;
-			i++;
-		}
-	}
-	free(fd_buffers);
-	fd_buffers = NULL;
-	return (NULL);
-}
