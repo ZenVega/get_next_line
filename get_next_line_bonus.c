@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
-#include <stdio.h>
 
 int	get_newline_chr(char *str)
 {
@@ -61,14 +60,10 @@ char	*read_to_nl(int fd, char **buffer_arr)
 	while (read_bytes > 0)
 	{
 		read_bytes = read(fd, read_str, BUFFER_SIZE);
-		if (read_bytes == 0 && buffer_arr[fd][0] == '\0')
-		{
-			free(buffer_arr[fd]);
-			buffer_arr[fd] = NULL;
+		if (read_bytes == 0)
 			break ;
-		}
 		if (read_bytes < 0)
-			return (free_all(buffer_arr, &read_str));
+			return (free_all(buffer_arr[fd], read_str));
 		read_str[read_bytes] = 0;
 		buffer_arr[fd] = merge_strs(buffer_arr[fd], read_str);
 		if (!buffer_arr[fd])
@@ -80,25 +75,28 @@ char	*read_to_nl(int fd, char **buffer_arr)
 	return (buffer_arr[fd]);
 }
 
-char	*extract_line(char *buffer)
+char	*extract_line(char **buffer_arr, int fd)
 {
 	int		nl;
 	char	*line;
 	int		to_clear;
+	int		str_len;
 
-	nl = get_newline_chr(buffer) + 1;
+	nl = get_newline_chr(buffer_arr[fd]) + 1;
 	if (!nl)
-		nl = ft_strlen(buffer);
+		nl = ft_strlen(buffer_arr[fd]);
 	line = ft_calloc(nl + 1, 1);
 	if (!line)
 	{
-		buffer = NULL;
-		return (buffer);
+		buffer_arr[fd] = NULL;
+		return (buffer_arr[fd]);
 	}
-	ft_memmove(line, buffer, nl);
-	to_clear = ft_strlen(buffer) - nl;
-	ft_memmove(buffer, buffer + nl, to_clear);
-	buffer[to_clear] = 0;
+	ft_memmove(line, buffer_arr[fd], nl);
+	to_clear = ft_strlen(buffer_arr[fd]) - nl;
+	ft_memmove(buffer_arr[fd], buffer_arr[fd] + nl, to_clear);
+	str_len = ft_strlen(buffer_arr[fd]);
+	while (to_clear <= str_len)
+		buffer_arr[fd][to_clear++] = 0;
 	return (line);
 }
 
@@ -114,14 +112,12 @@ char	*get_next_line(int fd)
 	if (!buffer_arr[fd])
 		return (NULL);
 	buffer_arr[fd] = read_to_nl(fd, buffer_arr);
-	if (!buffer_arr[fd])
-		return (NULL);
-	if (buffer_arr[fd][0] == '\0')
+	if (buffer_arr[fd] && buffer_arr[fd][0] == '\0')
 	{
 		free(buffer_arr[fd]);
 		buffer_arr[fd] = NULL;
 		return (NULL);
 	}
-	line = extract_line(buffer_arr[fd]);
+	line = extract_line(buffer_arr, fd);
 	return (line);
 }

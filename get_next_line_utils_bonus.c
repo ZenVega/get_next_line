@@ -60,17 +60,17 @@ void	*ft_calloc(size_t nmemb, size_t size)
 	return ((void *)ptr);
 }
 
-char	*free_all(char **first, char **second)
+char	*free_all(char *first, char *second)
 {
-	if (first && *first)
+	if (first)
 	{
-		free(*first);
-		*first = NULL;
+		free(first);
+		first = NULL;
 	}
-	if (second && *second)
+	if (second)
 	{
-		free(*second);
-		*second = NULL;
+		free(second);
+		second = NULL;
 	}
 	return (NULL);
 }
