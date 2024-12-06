@@ -17,7 +17,7 @@
 #  define BUFFER_SIZE 120
 # endif
 
-# define FD_MAX 24
+# define FD_MAX 1024
 
 # include <stdlib.h>
 # include <unistd.h>
@@ -25,7 +25,7 @@
 void	*ft_memmove(void *dest, const void *src, size_t n);
 char	*get_next_line(int fd);
 size_t	ft_strlen(const char *str);
-void	*ft_calloc(size_t size);
-char	*free_all(char *first, char **second);
+void	*ft_calloc(size_t nmemb, size_t size);
+char	*free_all(char **first, char **second);
 char	*free_buffers(char **fd_buffers);
 #endif

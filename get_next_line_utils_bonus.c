@@ -42,32 +42,37 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-void	*ft_calloc(size_t size)
+void	*ft_calloc(size_t nmemb, size_t size)
 {
 	unsigned char	*ptr;
-	unsigned int	i;
+	int				test;
+	int				i;
 
-	if (size <= 0)
+	test = nmemb * size;
+	if (size != 0 && test / size != nmemb)
 		return (NULL);
-	ptr = (unsigned char *)malloc(sizeof(char) * size);
+	ptr = (unsigned char *)malloc(nmemb * size);
 	if (!ptr)
 		return (NULL);
 	i = 0;
-	while (i < size)
+	while (i < test)
 		ptr[i++] = 0;
-	return (ptr);
+	return ((void *)ptr);
 }
 
-char	*free_all(char *first, char **second)
+char	*free_all(char **first, char **second)
 {
-	if (second != NULL)
+	if (first && *first)
+	{
+		free(*first);
+		*first = NULL;
+	}
+	if (second && *second)
 	{
 		free(*second);
 		*second = NULL;
 	}
-	free(first);
-	first = NULL;
-	return (first);
+	return (NULL);
 }
 
 char	*free_buffers(char **fd_buffers)
